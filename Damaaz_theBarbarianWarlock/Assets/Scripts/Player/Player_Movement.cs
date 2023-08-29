@@ -5,74 +5,126 @@ using UnityEngine.InputSystem;
 
 public class Player_Movement : MonoBehaviour
 {
+    //This scrip controls the basic movement of the player character using the CharacterController component.
+    //It uses the new input system for inputs.
+    //Using the inputs, it creates a few vectors for both axii and also a combination of them and tells the CharacterController to move.
+
     CharacterController controller;
 
-    [SerializeField] float movementSpeedForward = 5;
-    [SerializeField] float movementSpeedSide = 4;
+    //Set these InputActionReferences in the editor.
 
     [SerializeField] InputActionReference _moveLeft = null;
     [SerializeField] InputActionReference _moveRight = null;
     [SerializeField] InputActionReference _moveUp = null;
     [SerializeField] InputActionReference _moveDown = null;
 
-    // Start is called before the first frame update
+    [SerializeField] float movementSpeedForward = 5;
+    [SerializeField] float movementSpeedSideways = 4;
+
+    Vector3 movementVectorSideways = Vector3.zero;
+    Vector3 movementVectorForward = Vector3.zero;
+    
+    public Vector3 movementVector = Vector3.zero;
+
+    public bool updateMovement = true;
+
+    public Player_Enum_LookDirection lookDirection = Player_Enum_LookDirection.right;
+
     void Start()
     {
-        enableActions();
+        EnableActions();
         controller = GetComponent<CharacterController>();
     }
 
-    void enableActions()
+    public void EnableActions()
     {
+        //Enable input
+
         _moveLeft.action.Enable();
         _moveRight.action.Enable();
         _moveUp.action.Enable();
         _moveDown.action.Enable();
-
-        /*
-        _moveLeft.action.started += _ => MoveLeft();
-        _moveRight.action.started += _ => MoveRight();
-        _moveUp.action.started += _ => MoveUp();
-        _moveDown.action.started += _ => MoveDown();
-        */
-        _moveDown.action.IsPressed();
     }
 
-    // Update is called once per frame
+    public void DisableActions()
+    {
+        //Disable input
+
+        _moveLeft.action.Disable();
+        _moveRight.action.Disable();
+        _moveUp.action.Disable();
+        _moveDown.action.Disable();
+    }
+
+
+    public void EnableMovement()
+    {
+        //Do we want to move the character or not?
+
+        updateMovement = true;
+    }
+
+    public void DisableMovement()
+    {
+        //Do we want to move the character or not?
+
+        updateMovement = false;
+    }
+
     void Update()
     {
-        MoveLeft();
-        MoveRight();
-        MoveUp();
-        MoveDown();
+        UpdateMovementVector();   
     }
 
-    void MoveLeft()
+    void UpdateMovementVector()
     {
+        //Updating the vectors for both axii and also setting an enum for look direction, used by other scripts.
+
         if (_moveLeft.action.IsPressed())
         {
-            controller.Move(-transform.right * movementSpeedForward * Time.deltaTime);
+            lookDirection = Player_Enum_LookDirection.left;
+            movementVectorForward += -transform.right;
         }
-    }
-    void MoveRight()
-    {
         if (_moveRight.action.IsPressed())
         {
-            controller.Move(transform.right * movementSpeedForward * Time.deltaTime);
+            lookDirection = Player_Enum_LookDirection.right;
+            movementVectorForward += transform.right;
         }
-    }
-    void MoveUp()
-    {
         if (_moveUp.action.IsPressed())
         {
-            controller.Move(transform.forward * movementSpeedSide * Time.deltaTime);
+            movementVectorSideways += transform.forward;
         }
-    }
-    void MoveDown()
-    {
         if (_moveDown.action.IsPressed())
         {
-            controller.Move(-transform.forward * movementSpeedSide * Time.deltaTime);
+            movementVectorSideways += -transform.forward;
+        }
+        
+        //Combined vector used by other scripts. Is this bad design? Probably...
+
+        movementVector += movementVectorForward + movementVectorSideways;
+
+        //Normalize so we can control the multiplication
+
+        movementVectorForward.Normalize();
+        movementVectorSideways.Normalize();
+        movementVector.Normalize();
+
+        UpdateMovement();
+        
+        //Zero axii so if input is not present the next frame, the player will stop 
+
+        movementVectorForward = Vector3.zero;
+        movementVectorSideways = Vector3.zero;
+    }
+
+    void UpdateMovement()
+    {
+        //Tells the CharacterController how to move for each axii.
+
+        if (updateMovement)
+        {
+            controller.Move(movementVectorForward * movementSpeedForward * Time.deltaTime);
+            controller.Move(movementVectorSideways * movementSpeedSideways * Time.deltaTime);
         }
     }
 }
