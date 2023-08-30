@@ -7,12 +7,35 @@ public class Player_AnimationController : MonoBehaviour
     //This script controls the animations for the player character.
     //Contains public voids for animations that need to be played.
 
+    Player_Movement movement;
     Animator animator;
+    GameObject sprite;
 
     // Start is called before the first frame update
     void Start()
     {
+        movement = GetComponent<Player_Movement>();
         animator = GetComponentInChildren<Animator>();
+        sprite = transform.Find("Player_Sprite").gameObject;
+    }
+
+    void Update()
+    {
+        FlipSprite();
+    }
+
+    void FlipSprite()
+    {
+        //If the player is going backwards, flip sprite.
+
+        if (movement.lookDirection == Player_Enum_LookDirection.left)
+        {
+            sprite.transform.localScale = new Vector3(-1, 1, 1);
+        }
+        else
+        {
+            sprite.transform.localScale = Vector3.one;
+        }
     }
 
     public void PlayRollAnimation(Player_Enum_LookDirection lookDirection)

@@ -18,7 +18,7 @@ public class Player_Roll : MonoBehaviour
     Player_AnimationController animController;
     Player_Movement movement;
 
-    [SerializeField] float rollDistance = 15f;
+    [SerializeField] float rollSpeed = 15f;
     [SerializeField] float rollTime = 0.2f;
     [SerializeField] float coolDownTime = 2f;
 
@@ -53,7 +53,7 @@ public class Player_Roll : MonoBehaviour
 
         animController.PlayRollAnimation(movement.lookDirection);
 
-        //Timer for until rollTime.
+        //Timer for the duration of the roll.
 
         float currentTime = 0f;
         
@@ -61,7 +61,7 @@ public class Player_Roll : MonoBehaviour
         {
             //Moves the character a certain distance every frame during timer.
 
-            controller.Move(movement.movementVector * rollDistance * Time.deltaTime);
+            controller.Move(movement.movementVector * rollSpeed * Time.deltaTime);
 
             currentTime += Time.deltaTime;
             
