@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class Player_Attack_BaseCombo : MonoBehaviour
+public class Player_Attack_BaseCombo : MonoBehaviour, IPlayer_DamageOwner
 {
     //This script handles the base attack of the player character that has an attack combo system.
     //It uses the new input system for input.
@@ -15,9 +15,9 @@ public class Player_Attack_BaseCombo : MonoBehaviour
 
     [SerializeField] Player_Enum_BaseCombo comboState = Player_Enum_BaseCombo.first;
 
-    [SerializeField] float attackDamage = 20f;
-    [SerializeField] float attackDamageMultiplier = 2f;
-    [SerializeField] float attackDamageFinal = 100f;
+    [SerializeField] int attackDamage = 20;
+    [SerializeField] int attackDamageMultiplier = 2;
+    [SerializeField] int attackDamageFinal = 100;
     [SerializeField] float attackTimeWindow = 0.5f;
     [SerializeField] float comboTimeWindow = 0.5f;
     [SerializeField] float comboCoolDown = 1f;
@@ -28,6 +28,8 @@ public class Player_Attack_BaseCombo : MonoBehaviour
 
     GameObject attackObject;
 
+    int currentDamage;
+
     void Start()
     {
         //enable input and bind the event to DoAttack() with out CallbackContext.
@@ -36,6 +38,10 @@ public class Player_Attack_BaseCombo : MonoBehaviour
 
         //Attack object is the object with the attack collider.
         attackObject = transform.Find("Player_Sprite").Find("Player_Attack").gameObject;
+
+        //Give the damage dealer the damage owner which is this, from which it gets the correct damage amounts.
+        attackObject.GetComponent<Player_DamageDealer>().owner = this as IPlayer_DamageOwner;
+
         attackObject.transform.localScale = originalScale;
         attackObject.SetActive(false);
     }
@@ -79,11 +85,13 @@ public class Player_Attack_BaseCombo : MonoBehaviour
         }
     }
 
-    IEnumerator Attack(Vector3 scale, float damage, bool combo)
+    IEnumerator Attack(Vector3 scale, int damage, bool combo)
     {
         //We input the scale of the hitbox, the damage amount and if this should be able to combo.
 
         //Attack duration, a duration the player can't start another attack and the hitbox is on.
+
+        currentDamage = damage;
 
         attackObject.SetActive(true);
         attackObject.transform.localScale = scale;
@@ -132,5 +140,12 @@ public class Player_Attack_BaseCombo : MonoBehaviour
         //If there is no break, we want to set the enum to "first" in any case.
 
         comboState = Player_Enum_BaseCombo.first;
+    }
+
+    public int GetDamageAmount()
+    {
+        //For the damage dealer. Demanded by IPlayer_DamageOwner interface.
+        
+        return currentDamage;
     }
 }

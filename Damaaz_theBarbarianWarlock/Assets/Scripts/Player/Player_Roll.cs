@@ -49,6 +49,8 @@ public class Player_Roll : MonoBehaviour
     {
         //Takes over the movement of the player character from the Player_Movement and moves in the direction of the Player_Movement.lookDirection vector.
 
+        canRoll = false;
+
         movement.DisableMovement();
 
         animController.PlayRollAnimation(movement.lookDirection);
@@ -79,8 +81,6 @@ public class Player_Roll : MonoBehaviour
     {
         //A timer that disables and enables a bool.
         //Bool used for if the player can roll.
-
-        canRoll = false;
 
         float currentTime = 0f;
 
