@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class AI_Cultist_StateBase : MonoBehaviour
 {
@@ -9,7 +10,9 @@ public class AI_Cultist_StateBase : MonoBehaviour
     //Owning state machine
 
     public AI_Cultist_StateMachine stateMachine;
-    
+    public Transform thisParentTransform;
+    public NavMeshAgent agentThis;
+
     //States with names for easier switching, for example "ChangeState(chase);".
 
     private protected AI_Cultist_StateMachine.States dead = AI_Cultist_StateMachine.States.dead;
@@ -23,4 +26,6 @@ public class AI_Cultist_StateBase : MonoBehaviour
 
         stateMachine.ChangeState(state);
     }
+
+
 }

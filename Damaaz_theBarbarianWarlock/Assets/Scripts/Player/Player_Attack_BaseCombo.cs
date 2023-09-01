@@ -27,8 +27,11 @@ public class Player_Attack_BaseCombo : MonoBehaviour, IPlayer_DamageOwner
     [SerializeField] Vector3 originalScale = Vector3.one;
 
     GameObject attackObject;
+    GameObject comboIndicatorObject;
 
     int currentDamage;
+
+    Player_AnimationController animController;
 
     void Start()
     {
@@ -36,14 +39,19 @@ public class Player_Attack_BaseCombo : MonoBehaviour, IPlayer_DamageOwner
         _doAttack.action.Enable();
         _doAttack.action.started += _ => DoAttack();
 
+        animController = GetComponent<Player_AnimationController>();
+
         //Attack object is the object with the attack collider.
         attackObject = transform.Find("Player_Sprite").Find("Player_Attack").gameObject;
+        comboIndicatorObject = transform.Find("Player_Sprite").Find("Player_Combo_Indicator").gameObject;
 
         //Give the damage dealer the damage owner which is this, from which it gets the correct damage amounts.
         attackObject.GetComponent<Player_DamageDealer>().owner = this as IPlayer_DamageOwner;
 
         attackObject.transform.localScale = originalScale;
         attackObject.SetActive(false);
+
+        comboIndicatorObject.SetActive(false);
     }
 
     void DoAttack()
@@ -56,17 +64,17 @@ public class Player_Attack_BaseCombo : MonoBehaviour, IPlayer_DamageOwner
             switch (comboState)
             {
                 case Player_Enum_BaseCombo.first:
-                    StartCoroutine(Attack(originalScale, attackDamage, true));
+                    StartCoroutine(Attack(originalScale, attackDamage, true, "attackDown"));
                     comboState++;
                     break;
 
                 case Player_Enum_BaseCombo.second:
-                    StartCoroutine(Attack(originalScale * attackScaleMultiplier * 1, attackDamage * attackDamageMultiplier * 1, true));
+                    StartCoroutine(Attack(originalScale * attackScaleMultiplier * 1, attackDamage * attackDamageMultiplier * 1, true, "attackUp"));
                     comboState++;
                     break;
 
                 case Player_Enum_BaseCombo.third:
-                    StartCoroutine(Attack(originalScale * attackScaleMultiplier * 2, attackDamageFinal, false));
+                    StartCoroutine(Attack(originalScale * attackScaleMultiplier * 2, attackDamageFinal, false, "attackDown"));
                     comboState = Player_Enum_BaseCombo.first;
 
                     
@@ -85,7 +93,7 @@ public class Player_Attack_BaseCombo : MonoBehaviour, IPlayer_DamageOwner
         }
     }
 
-    IEnumerator Attack(Vector3 scale, int damage, bool combo)
+    IEnumerator Attack(Vector3 scale, int damage, bool combo, string attackAnimName)
     {
         //We input the scale of the hitbox, the damage amount and if this should be able to combo.
 
@@ -95,6 +103,7 @@ public class Player_Attack_BaseCombo : MonoBehaviour, IPlayer_DamageOwner
 
         attackObject.SetActive(true);
         attackObject.transform.localScale = scale;
+        animController.PlayBaseAttackAnimation(attackAnimName);
 
         yield return new WaitForSeconds(attackTimeWindow);
 
@@ -104,6 +113,7 @@ public class Player_Attack_BaseCombo : MonoBehaviour, IPlayer_DamageOwner
         
         if (combo)
         {
+            comboIndicatorObject?.SetActive(true);
             canAttack = true;
         }
 
@@ -122,6 +132,8 @@ public class Player_Attack_BaseCombo : MonoBehaviour, IPlayer_DamageOwner
                 //Could have used a bool and a method linked to the actual input event-
                 //like in Start and we would just check that bool here.
 
+                comboIndicatorObject.SetActive(false);
+
                 yield break;
             }
 
@@ -137,8 +149,9 @@ public class Player_Attack_BaseCombo : MonoBehaviour, IPlayer_DamageOwner
             canAttack = true;
         }
 
-        //If there is no break, we want to set the enum to "first" in any case.
+        //If there is no Combo, we want to set the enum to "first" in any case.
 
+        comboIndicatorObject.SetActive(false);
         comboState = Player_Enum_BaseCombo.first;
     }
 

@@ -5,10 +5,9 @@ using UnityEngine.AI;
 
 public class AI_Cultist_ChaseState : AI_Cultist_StateBase
 {
+    //Trash code, dont use
     //Incomplete
 
-    public NavMeshAgent agent;
-    public Transform thisParentTransform;
     [SerializeField] float attackDistance;
     public float distanceToPlayer;
 
@@ -16,8 +15,6 @@ public class AI_Cultist_ChaseState : AI_Cultist_StateBase
     void Start()
     {
         thisParentTransform = transform.parent;
-        agent = thisParentTransform.GetComponent<NavMeshAgent>();
-
         stateMachine.health.onHealthChange += (int health) => CheckHealth(health);
     }
 
@@ -26,7 +23,7 @@ public class AI_Cultist_ChaseState : AI_Cultist_StateBase
     {
         //distanceToPlayer = Vector3.Distance(thisParentTransform.position, stateMachine.playerCharacter.transform.position);
 
-        agent.SetDestination(stateMachine.playerCharacter.transform.position);
+        agentThis.SetDestination(stateMachine.playerCharacter.transform.position);
     }
 
     void CheckHealth(int health)
@@ -35,7 +32,6 @@ public class AI_Cultist_ChaseState : AI_Cultist_StateBase
         if (health <= 0)
         {
             ChangeState(dead);
-            ChangeState(damaged);
         }
         else
         {

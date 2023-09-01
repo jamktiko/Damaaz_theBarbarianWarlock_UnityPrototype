@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class AI_Cultist_StateMachine : MonoBehaviour
 {
@@ -46,11 +48,13 @@ public class AI_Cultist_StateMachine : MonoBehaviour
 
     public Cultist_Health health;
 
+    public NavMeshAgent agent;
+
     void Awake()
     {
         playerCharacter = GameObject.Find("Player").transform.Find("Player_Character").gameObject;
         health = GetComponent<Cultist_Health>();
-
+        agent = GetComponent<NavMeshAgent>();
         thisTransfrom = GetComponent<Transform>();
 
         //making dictionary enteries with the enum as the key. Also in this stage, we instantiate all the class prefabs and as a child of this object.
@@ -62,17 +66,24 @@ public class AI_Cultist_StateMachine : MonoBehaviour
 
         //Telling the states who is their owner. Need to do this in a loop.
 
-        deadState.stateMachine = this;
-        chaseState.stateMachine = this;
-        attackState.stateMachine = this;
-        damagedState.stateMachine = this;
+        foreach (var state in statesDic)
+        {
+            state.Value.stateMachine = this;
+            state.Value.thisParentTransform = this.gameObject.transform;
+            state.Value.agentThis = agent;
+        }
 
+        Invoke("LateStart", 0.1f);
+    }
+
+    void LateStart()
+    {
         //Setting all states off so they don't run.
 
-        deadState.gameObject.SetActive(false);
-        chaseState.gameObject.SetActive(false);
-        attackState.gameObject.SetActive(false);
-        damagedState.gameObject.SetActive(false);
+        foreach (var state in statesDic)
+        {
+            state.Value.gameObject.SetActive(false);
+        }
 
         //Setting only the current state, which at awake is the initialState, active.
 
@@ -83,9 +94,11 @@ public class AI_Cultist_StateMachine : MonoBehaviour
     public void ChangeState(States state)
     {
         //Used by the states to switch from state to state.
-
-        currentState.gameObject.SetActive(false);
-        currentState = statesDic[state];
-        currentState.gameObject.SetActive(true);
+        if (statesDic[state] != currentState)
+        {
+            currentState.gameObject.SetActive(false);
+            currentState = statesDic[state];
+            currentState.gameObject.SetActive(true);
+        }
     }
 }

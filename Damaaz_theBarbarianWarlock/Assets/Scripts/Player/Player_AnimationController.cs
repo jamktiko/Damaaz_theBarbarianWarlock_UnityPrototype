@@ -9,14 +9,16 @@ public class Player_AnimationController : MonoBehaviour
 
     Player_Movement movement;
     Animator animator;
-    GameObject sprite;
+    GameObject spriteGameObject;
+    SpriteRenderer spriteRenderer;
 
     // Start is called before the first frame update
     void Start()
     {
         movement = GetComponent<Player_Movement>();
         animator = GetComponentInChildren<Animator>();
-        sprite = transform.Find("Player_Sprite").gameObject;
+        spriteGameObject = transform.Find("Player_Sprite").gameObject;
+        spriteRenderer = spriteGameObject.GetComponent<SpriteRenderer>();
     }
 
     void Update()
@@ -30,11 +32,11 @@ public class Player_AnimationController : MonoBehaviour
 
         if (movement.lookDirection == Player_Enum_LookDirection.left)
         {
-            sprite.transform.localScale = new Vector3(-1, 1, 1);
+            spriteGameObject.transform.localScale = new Vector3(-1, 1, 1);
         }
         else
         {
-            sprite.transform.localScale = Vector3.one;
+            spriteGameObject.transform.localScale = Vector3.one;
         }
     }
 
@@ -56,6 +58,23 @@ public class Player_AnimationController : MonoBehaviour
 
             StartCoroutine(SetAnimationBool("rollLeft", 0.1f, false));
         }
+    }
+
+    public void SwitchRunningAnimationBool(bool value)
+    {
+        StartCoroutine(SetAnimationBool("running", 0, value));
+    }
+
+    public void SwitchPlayerSprite(Sprite sprite)
+    {
+        spriteRenderer.sprite = sprite;
+    }
+
+    public void PlayBaseAttackAnimation(string animBoolName)
+    {
+        StartCoroutine(SetAnimationBool(animBoolName, 0, true));
+
+        StartCoroutine(SetAnimationBool(animBoolName, 0.1f, false));
     }
 
     IEnumerator SetAnimationBool(string name, float delay, bool value)

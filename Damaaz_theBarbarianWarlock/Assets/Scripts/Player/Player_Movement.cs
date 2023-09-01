@@ -25,15 +25,19 @@ public class Player_Movement : MonoBehaviour
     Vector3 movementVectorForward = Vector3.zero;
     
     public Vector3 movementVector = Vector3.zero;
+    [SerializeField] Vector3 zeroingMovementVector = Vector3.zero;
 
     public bool updateMovement = true;
 
     public Player_Enum_LookDirection lookDirection = Player_Enum_LookDirection.right;
 
+    Player_AnimationController animController;
+
     void Start()
     {
         EnableActions();
         controller = GetComponent<CharacterController>();
+        animController = GetComponent<Player_AnimationController>();
     }
 
     public void EnableActions()
@@ -73,7 +77,9 @@ public class Player_Movement : MonoBehaviour
 
     void Update()
     {
-        UpdateMovementVector();   
+        UpdateMovementVector();
+
+        UpdateRunningAnimation();
     }
 
     void UpdateMovementVector()
@@ -98,6 +104,15 @@ public class Player_Movement : MonoBehaviour
         {
             movementVectorSideways += -transform.forward;
         }
+
+        if (_moveLeft.action.IsPressed() || _moveRight.action.IsPressed() || _moveUp.action.IsPressed() || _moveDown.action.IsPressed())
+        {
+            zeroingMovementVector = movementVector;
+        }
+        else
+        {
+            zeroingMovementVector = Vector3.zero;
+        }
         
         //Combined vector used by other scripts. Is this bad design? Probably...
 
@@ -108,7 +123,7 @@ public class Player_Movement : MonoBehaviour
         movementVectorForward.Normalize();
         movementVectorSideways.Normalize();
         movementVector.Normalize();
-
+        
         UpdateMovement();
         
         //Zero axii so if input is not present the next frame, the player will stop 
@@ -125,6 +140,18 @@ public class Player_Movement : MonoBehaviour
         {
             controller.Move(movementVectorForward * movementSpeedForward * Time.deltaTime);
             controller.Move(movementVectorSideways * movementSpeedSideways * Time.deltaTime);
+        }
+    }
+
+    void UpdateRunningAnimation()
+    {
+        if (zeroingMovementVector != Vector3.zero)
+        {
+            animController.SwitchRunningAnimationBool(true);
+        }
+        else
+        {
+            animController.SwitchRunningAnimationBool(false);
         }
     }
 }

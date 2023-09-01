@@ -6,30 +6,43 @@ using UnityEngine.XR;
 
 public class AI_Cultist_DamagedState : AI_Cultist_StateBase
 {
+    //Trash code, dont use
     //Incomplete
 
-    NavMeshAgent agent;
-
-    public Transform thisParentTransform;
-
-    [SerializeField] float knockBackForce = 5f;
+    [SerializeField] float knockBackAmount = 0.1f;
+    [SerializeField] float knockBackTime = 0.5f;
 
     // Start is called before the first frame update
-    void Awake()
+    void Start()
     {
-
         stateMachine.health.onHealthChange += (int health) => CheckHealth(health);
-        thisParentTransform = transform.parent;
-        agent = thisParentTransform.GetComponent<NavMeshAgent>();
     }
 
     private void OnEnable()
     {
-        Debug.Log(damaged);
+        if (agentThis != null)
+        {
+            agentThis.Move((stateMachine.thisTransfrom.position - stateMachine.playerCharacter.transform.position).normalized * knockBackAmount);
 
-        agent.Move((stateMachine.thisTransfrom.position - stateMachine.playerCharacter.transform.position).normalized * knockBackForce);
+            StartCoroutine(KnockBack());
+        }
     }
-    
+
+    IEnumerator KnockBack()
+    {
+        float currentTime = 0f;
+
+        while (knockBackTime >= currentTime) 
+        {
+            currentTime += Time.deltaTime;
+
+            agentThis.Move((thisParentTransform.position - stateMachine.playerCharacter.transform.position).normalized * knockBackAmount);
+
+            yield return null;
+        }
+
+        ChangeState(chase);
+    }
 
     void CheckHealth(int health)
     {

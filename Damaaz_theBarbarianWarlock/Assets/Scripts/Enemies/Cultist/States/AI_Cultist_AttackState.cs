@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class AI_Cultist_AttackState : AI_Cultist_StateBase
 {
+    //Trash code, dont use
     //Incomplete
-
 
     // Start is called before the first frame update
     void Start()
@@ -23,7 +23,6 @@ public class AI_Cultist_AttackState : AI_Cultist_StateBase
         if (health <= 0)
         {
             ChangeState(dead);
-            ChangeState(damaged);
         }
         else
         {
