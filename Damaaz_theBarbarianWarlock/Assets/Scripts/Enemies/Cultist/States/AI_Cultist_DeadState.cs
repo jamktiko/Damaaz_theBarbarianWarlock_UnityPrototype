@@ -26,8 +26,11 @@ public class AI_Cultist_DeadState : AI_Cultist_StateBase
             StartCoroutine(KnockBack());
 
             thisParentTransform.GetComponent<Collider>().enabled = false;
-            
-            thisParentTransform.Find("Sprite").GetComponent<SpriteRenderer>().sprite = pileOfBones;
+
+            SpriteRenderer spriteRenderer = thisParentTransform.Find("Sprite").GetComponent<SpriteRenderer>();
+
+            spriteRenderer.sprite = pileOfBones;
+            spriteRenderer.sortingOrder = 4;
 
             Instantiate(blood, thisParentTransform.position, blood.transform.rotation);
 
