@@ -12,9 +12,13 @@ public class AI_Cultist_DamagedState : AI_Cultist_StateBase
     [SerializeField] float knockBackAmount = 0.1f;
     [SerializeField] float knockBackTime = 0.5f;
 
+    Animator animator;
+
     // Start is called before the first frame update
     void Start()
     {
+        animator = thisParentTransform.GetComponent<Animator>();
+
         stateMachine.health.onHealthChange += (int health) => CheckHealth(health);
     }
 
@@ -30,6 +34,8 @@ public class AI_Cultist_DamagedState : AI_Cultist_StateBase
 
     IEnumerator KnockBack()
     {
+        animator.SetBool("damaged", true);
+
         float currentTime = 0f;
 
         while (knockBackTime >= currentTime) 
@@ -40,6 +46,8 @@ public class AI_Cultist_DamagedState : AI_Cultist_StateBase
 
             yield return null;
         }
+
+        animator.SetBool("damaged", false);
 
         ChangeState(chase);
     }

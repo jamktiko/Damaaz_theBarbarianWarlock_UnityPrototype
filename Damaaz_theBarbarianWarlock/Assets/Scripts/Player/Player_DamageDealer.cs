@@ -9,6 +9,13 @@ public class Player_DamageDealer : MonoBehaviour
 
     public IPlayer_DamageOwner owner;
 
+    Player_AttackEventManager attackEvent;
+
+    private void Start()
+    {
+        attackEvent = transform.parent.GetComponent<Player_AttackEventManager>();
+    }
+
     private void OnTriggerEnter(Collider other)
     {
         //Checks if it implements an IEnemies_Health interface used by enemy health scripts.
@@ -25,7 +32,11 @@ public class Player_DamageDealer : MonoBehaviour
 
             //This is built this way so we can re-use scripts like this.
 
-            enemyHealth.ChangeHealth(-owner.GetDamageAmount());
+            int healthChangeAmount = owner.GetDamageAmount();
+
+            attackEvent.CallOnDamaged_Event(healthChangeAmount);
+
+            enemyHealth.ChangeHealth(-healthChangeAmount);
         }
     }
 }

@@ -13,14 +13,21 @@ public class AI_Cultist_DeadState : AI_Cultist_StateBase
 
     [SerializeField] GameObject blood;
 
-    [SerializeField] Sprite pileOfBones;
+    Animator animator;
 
     bool isDead = false;
+
+    private void Start()
+    {
+        animator = thisParentTransform.GetComponent<Animator>();
+    }
 
     private void OnEnable()
     {
         if (agentThis != null && !isDead)
         {
+            animator.SetBool("dead", true);
+            
             agentThis.ResetPath();
 
             StartCoroutine(KnockBack());
@@ -29,7 +36,6 @@ public class AI_Cultist_DeadState : AI_Cultist_StateBase
 
             SpriteRenderer spriteRenderer = thisParentTransform.Find("Sprite").GetComponent<SpriteRenderer>();
 
-            spriteRenderer.sprite = pileOfBones;
             spriteRenderer.sortingOrder = 4;
 
             Instantiate(blood, thisParentTransform.position, blood.transform.rotation);
@@ -50,7 +56,7 @@ public class AI_Cultist_DeadState : AI_Cultist_StateBase
 
             yield return null;
         }
-        
+
         agentThis.enabled = false;
     }
 }

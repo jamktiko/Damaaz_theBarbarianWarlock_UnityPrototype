@@ -145,6 +145,7 @@ public class Player_Movement : MonoBehaviour
 
     void UpdateRunningAnimation()
     {
+
         if (zeroingMovementVector != Vector3.zero)
         {
             animController.SwitchRunningAnimationBool(true);

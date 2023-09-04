@@ -47,5 +47,5 @@ MonoBehaviour:
   stateMachine: {fileID: 0}
   thisParentTransform: {fileID: 0}
   agentThis: {fileID: 0}
-  knockBackAmount: 0.1
-  knockBackTime: 0.2
+  knockBackAmount: 0.2
+  knockBackTime: 0.1

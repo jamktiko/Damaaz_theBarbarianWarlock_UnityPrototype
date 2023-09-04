@@ -23,8 +23,6 @@ public class Environment_SimpleParalax : MonoBehaviour
     {
         float dist = (cam.transform.position.x * effectStrength);
 
-        Vector3 newPos = new Vector3(pos + dist, transform.position.y, transform.position.z);
-
-        transform.position = newPos;
+        transform.position = new Vector3(pos + dist, transform.position.y, transform.position.z);
     }
 }

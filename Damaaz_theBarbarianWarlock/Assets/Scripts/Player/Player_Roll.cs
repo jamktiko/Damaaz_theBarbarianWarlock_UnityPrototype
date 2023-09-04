@@ -24,8 +24,17 @@ public class Player_Roll : MonoBehaviour
 
     [SerializeField] bool canRoll = true;
 
+    TrailRenderer[] trails;
+
     void Start()
     {
+        trails = transform.Find("Player_Sprite").Find("Player_Trail").GetComponentsInChildren<TrailRenderer>();
+
+        foreach (TrailRenderer trail in trails)
+        {
+            trail.emitting = false;
+        }
+
         controller = GetComponent<CharacterController>();
         animController = GetComponent<Player_AnimationController>();
         movement = GetComponent<Player_Movement>();
@@ -53,6 +62,13 @@ public class Player_Roll : MonoBehaviour
 
         movement.DisableMovement();
 
+        foreach (TrailRenderer trail in trails)
+        {
+            trail.emitting = true;
+            trail.endColor = new Color(255, 0, 0, 255);
+            trail.startColor = new Color(0, 0, 0, 255);
+        }
+
         animController.PlayRollAnimation(movement.lookDirection);
 
         //Timer for the duration of the roll.
@@ -74,6 +90,13 @@ public class Player_Roll : MonoBehaviour
 
         movement.EnableMovement();
 
+        foreach (TrailRenderer trail in trails)
+        {
+            trail.emitting = false;
+            trail.endColor = new Color(255, 0, 0, 0);
+            trail.startColor = new Color(0, 0, 0, 0);
+        }
+
         StartCoroutine(RollCoolDown());
     }
 
@@ -84,11 +107,11 @@ public class Player_Roll : MonoBehaviour
 
         float currentTime = 0f;
 
-        while(coolDownTime >= currentTime)
+        while (coolDownTime >= currentTime)
         {
             currentTime += Time.deltaTime;
 
-            yield return null;
+                yield return null;
         }
 
         canRoll = true;

@@ -77,6 +77,11 @@ public class Player_AnimationController : MonoBehaviour
         StartCoroutine(SetAnimationBool(animBoolName, 0.1f, false));
     }
 
+    public void SwitchSpinningAttackAnimation(bool animBoolValue)
+    {
+        StartCoroutine(SetAnimationBool("spinAttack", 0f, animBoolValue));
+    }
+
     IEnumerator SetAnimationBool(string name, float delay, bool value)
     {
         //This IEnumerator sets an animator bool with a possible delay.
